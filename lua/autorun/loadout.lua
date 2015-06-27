@@ -43,7 +43,7 @@ hook.Add( "TTTBeginRound", "loadout_masterhook", function()
 				file.Write( "loadout/" .. identifier .. "/pistol.txt", secondary )
 				file.Write( "loadout/" .. identifier .. "/equipment.txt", equipment )
 				
-				if pl:IsSpec() ~= true and pl:SteamID() == "STEAM_0:1:41036632" then
+				if pl:IsSpec() ~= true then
 					local identifier = pl:SteamID64()
 									
 					if file.Exists( "loadout/" .. identifier .. "/primary.txt", "DATA" ) then
