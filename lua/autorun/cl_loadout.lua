@@ -132,6 +132,6 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
 --
    dsettings:AddItem(lequipment)
    
-   dtabs:AddSheet("Loadouts", dsettings, nil, false, false, "Damagelog menu settings")
+   dtabs:AddSheet("Loadouts", dsettings, "icon16/bomb.png", false, false, "Damagelog menu settings")
 end )
 	
