@@ -26,12 +26,17 @@ end
 local ValidRanks = {
 	"donator",
 	"donator2",
-	"director"
+	"director",
+	"donatoradmin",
+	"admin",
+	"superadmin",
+	"alpha",
+	"owner"
 }
 
-hook.Add( "TTTBeginRound", "loadout_masterhook", function()
+hook.Add( "PlayerSpawn", "loadout_masterhook", function( pl )
     if SERVER then
-        for _, pl in pairs(player.GetAll()) do
+        timer.Simple( 0.1, function() --for _, pl in pairs(player.GetAll()) do
 			if (table.HasValue(ValidRanks, pl:GetUserGroup())) then
 				local identifier = pl:SteamID64()
 				local primary = pl:GetInfo( "ttt_loadout_primary" )
@@ -58,7 +63,7 @@ hook.Add( "TTTBeginRound", "loadout_masterhook", function()
 						local ammoamt = wep.Primary.ClipMax
 						local ammotype = wep.Primary.Ammo
 						pl:Give( weapon )
-						pl:SelectWeapon( weapon )
+						timer.Simple( 0.25, function() pl:SelectWeapon( weapon ) end )
 						pl:SetAmmo( ammoamt, ammotype, true )
 					end
 									
@@ -88,13 +93,13 @@ hook.Add( "TTTBeginRound", "loadout_masterhook", function()
 							end
 						end
 						pl:Give( weapon )
-						pl:SetAmmo( ammoamt, ammotype, true )
-					end
+					end			
 					
 					sound.Play( 'items/gift_pickup.wav', pl:GetPos() )
 				end
 			end
-        end
+        --end
+		end )
     end
 end )
 
