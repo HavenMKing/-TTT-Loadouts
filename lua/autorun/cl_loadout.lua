@@ -15,7 +15,10 @@ local invisibleweapons = {
 	"weapon_ttt_smokegrenade2",
 	"weapon_ttt_smokegrenade3",
 	"weapon_ttt_zombgren",
-	"weapon_tttbasegrenade"
+	"weapon_tttbasegrenade",
+    "weapon_ttt_medkit_20",
+    "weapon_ttt_medkit_15",
+    "weapon_ttt_medkit_5"
 }
 
 hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
@@ -41,18 +44,33 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
 
    local lprimarydropbox = vgui.Create("DComboBox", lprimary)
 
+   if file.Exists( "loadout/primary.txt", "DATA" ) then 
+    primaryClass = file.Read( "loadout/primary.txt", "DATA" )
+   end
+   
+   if file.Exists( "loadout/secondary.txt", "DATA" ) then 
+    secondaryClass = file.Read( "loadout/secondary.txt", "DATA" )
+   end
+   
+   if file.Exists( "loadout/equipment.txt", "DATA" ) then 
+    equipmentClass = file.Read( "loadout/equipment.txt", "DATA" )
+   end
+   
    for _, v in pairs( weapons.GetList() ) do 
       if v.Kind == WEAPON_HEAVY and (!table.HasValue(invisibleweapons, v.ClassName)) then
 	  local weapon = v.ClassName
 	  local printname = v.PrintName
-	  lprimarydropbox:AddChoice(weapon, weapon)
-	  print( weapon )
+      if weapon == primaryClass then
+        lprimarydropbox:AddChoice(weapon, weapon, true)
+      else
+        lprimarydropbox:AddChoice(weapon, weapon, false)
+      end
 	  end
    end
 
    lprimarydropbox.OnSelect = function(idx, val, data)
+                       file.Write( "loadout/primary.txt", data )
                        RunConsoleCommand("ttt_loadout_primary", data )
-					   print( data )
                     end
    lprimarydropbox.Think = lprimarydropbox.ConVarStringThink
 
@@ -69,14 +87,17 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
       if v.Kind == WEAPON_PISTOL and (!table.HasValue(invisibleweapons, v.ClassName)) then
 	  local weapon = v.ClassName
 	  local printname = v.PrintName
-	  lsecondarydropbox:AddChoice(weapon, weapon)
-	  print( weapon )
+      if weapon == secondaryClass then
+        lsecondarydropbox:AddChoice(weapon, weapon, true)
+      else
+        lsecondarydropbox:AddChoice(weapon, weapon, false)
+      end
 	  end
    end
 
    lsecondarydropbox.OnSelect = function(idx, val, data)
+                       file.Write( "loadout/secondary.txt", data )
                        RunConsoleCommand("ttt_loadout_secondary", data )
-					   print( data )
                     end
    lsecondarydropbox.Think = lsecondarydropbox.ConVarStringThink
 
@@ -93,14 +114,17 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
       if v.Kind == WEAPON_NADE and (!table.HasValue(invisibleweapons, v.ClassName)) then
 	  local weapon = v.ClassName
 	  local printname = v.PrintName
-	  lequipmentdropbox:AddChoice(weapon, weapon)
-	  print( weapon )
+      if weapon == equipmentClass then
+        lequipmentdropbox:AddChoice(weapon, weapon, true)
+      else
+        lequipmentdropbox:AddChoice(weapon, weapon, false)
+      end
 	  end
    end
 
    lequipmentdropbox.OnSelect = function(idx, val, data)
+                        file.Write( "loadout/equipment.txt", data )
                        RunConsoleCommand("ttt_loadout_equipment", data )
-					   print( data )
                     end
    lequipmentdropbox.Think = lequipmentdropbox.ConVarStringThink
 
