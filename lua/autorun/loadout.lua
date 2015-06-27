@@ -1,3 +1,27 @@
+---Weapons Master Function -----------------------------------
+function GivePlayerWeapon(ply,wepClass)
+    if SERVER then
+	local wep = weapons.Get(wepClass)
+	local ammoamt = wep.Primary.DefaultClip
+	local ammotype = wep.Primary.Ammo
+
+        for _, k in pairs(ply:GetWeapons()) do
+            local weaponclass = k:GetClass()
+            if weapons.Get( weaponclass ).Kind == wep.Kind then
+                ply:StripWeapon( weaponclass )
+            end
+        end
+    
+	if not ply:IsSpec() then
+		ply:Give(wepClass)
+		if wep.Kind == WEAPON_HEAVY then
+			ply:SelectWeapon(wepClass)
+		end
+		ply:SetAmmo( ammoamt, ammotype, true )
+	end
+    end
+end
+
 ---Weapon Loadout - Master -----------------------------------
 local ValidRanks = {
 	"donator",
@@ -74,3 +98,12 @@ hook.Add( "TTTBeginRound", "loadout_masterhook", function()
     end
 end )
 
+function fixreporting()
+	if SERVER then
+		for _, pl in pairs(player.GetAll()) do
+			pl.CanReport = true
+		end
+	end
+end
+
+hook.Add( "Tick", "RDMManagerFix", fixreporting )
