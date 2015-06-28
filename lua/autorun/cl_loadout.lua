@@ -1,25 +1,18 @@
-CreateClientConVar("ttt_avoid_detective", "0", true, true)
-CreateClientConVar("ttt_loadout_primary", "0", true, true)
-CreateClientConVar("ttt_loadout_secondary", "0", true, true)
-CreateClientConVar("ttt_loadout_equipment", "0", true, true)
+net.Receive( "loadout_invisible", function()
+	invisibleweapons = net.ReadTable() 
+end )
 
-local invisibleweapons = {
-	"weapon_ttt_jum9",
-	"weapon_ttt_poison_dart",
-	"weapon_ttt_bump",
-	"weapon_ttt_rollerb",
-	"weapon_zm_molotov2",
-	"weapon_zm_molotov3",
-	"weapon_ttt_confgrenade2",
-	"weapon_ttt_confgrenade3",
-	"weapon_ttt_smokegrenade2",
-	"weapon_ttt_smokegrenade3",
-	"weapon_ttt_zombgren",
-	"weapon_tttbasegrenade",
-    "weapon_ttt_medkit_20",
-    "weapon_ttt_medkit_15",
-    "weapon_ttt_medkit_5"
-}
+net.Receive( "ttt_loadoutprimary", function()
+	primaryClass = net.ReadString()
+end )
+
+net.Receive( "ttt_loadoutsecondary", function()
+	secondaryClass = net.ReadString()
+end )
+
+net.Receive( "ttt_loadoutequipment", function()
+	equipmentClass = net.ReadString()
+end )
 
 hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
 
@@ -43,24 +36,12 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
    
 
    local lprimarydropbox = vgui.Create("DComboBox", lprimary)
-
-   if file.Exists( "loadout/primary.txt", "DATA" ) then 
-    primaryClass = file.Read( "loadout/primary.txt", "DATA" )
-   end
-   
-   if file.Exists( "loadout/secondary.txt", "DATA" ) then 
-    secondaryClass = file.Read( "loadout/secondary.txt", "DATA" )
-   end
-   
-   if file.Exists( "loadout/equipment.txt", "DATA" ) then 
-    equipmentClass = file.Read( "loadout/equipment.txt", "DATA" )
-   end
    
    for _, v in pairs( weapons.GetList() ) do 
       if v.Kind == WEAPON_HEAVY and (!table.HasValue(invisibleweapons, v.ClassName)) then
 	  local weapon = v.ClassName
 	  local printname = v.PrintName
-      if weapon == primaryClass then
+	  if weapon == primaryClass then
         lprimarydropbox:AddChoice(weapon, weapon, true)
       else
         lprimarydropbox:AddChoice(weapon, weapon, false)
@@ -69,8 +50,10 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
    end
 
    lprimarydropbox.OnSelect = function(idx, val, data)
-                       file.Write( "loadout/primary.txt", data )
-                       RunConsoleCommand("ttt_loadout_primary", data )
+						net.Start( "ttt_loadoutprimary" )
+							net.WriteString( data )
+						net.SendToServer()
+					   print( data )
                     end
    lprimarydropbox.Think = lprimarydropbox.ConVarStringThink
 
@@ -87,7 +70,7 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
       if v.Kind == WEAPON_PISTOL and (!table.HasValue(invisibleweapons, v.ClassName)) then
 	  local weapon = v.ClassName
 	  local printname = v.PrintName
-      if weapon == secondaryClass then
+	  if weapon == secondaryClass then
         lsecondarydropbox:AddChoice(weapon, weapon, true)
       else
         lsecondarydropbox:AddChoice(weapon, weapon, false)
@@ -96,8 +79,10 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
    end
 
    lsecondarydropbox.OnSelect = function(idx, val, data)
-                       file.Write( "loadout/secondary.txt", data )
-                       RunConsoleCommand("ttt_loadout_secondary", data )
+						net.Start( "ttt_loadoutsecondary" )
+							net.WriteString( data )
+						net.SendToServer()
+					   print( data )
                     end
    lsecondarydropbox.Think = lsecondarydropbox.ConVarStringThink
 
@@ -114,7 +99,7 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
       if v.Kind == WEAPON_NADE and (!table.HasValue(invisibleweapons, v.ClassName)) then
 	  local weapon = v.ClassName
 	  local printname = v.PrintName
-      if weapon == equipmentClass then
+	  if weapon == equipmentClass then
         lequipmentdropbox:AddChoice(weapon, weapon, true)
       else
         lequipmentdropbox:AddChoice(weapon, weapon, false)
@@ -123,8 +108,10 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
    end
 
    lequipmentdropbox.OnSelect = function(idx, val, data)
-                        file.Write( "loadout/equipment.txt", data )
-                       RunConsoleCommand("ttt_loadout_equipment", data )
+						net.Start( "ttt_loadoutequipment" )
+							net.WriteString( data )
+						net.SendToServer()
+					   print( data )
                     end
    lequipmentdropbox.Think = lequipmentdropbox.ConVarStringThink
 
@@ -132,6 +119,6 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
 --
    dsettings:AddItem(lequipment)
    
-   dtabs:AddSheet("Loadouts", dsettings, "icon16/bomb.png", false, false, "Damagelog menu settings")
+   dtabs:AddSheet("Loadouts", dsettings, nil, false, false, "Damagelog menu settings")
 end )
 	
