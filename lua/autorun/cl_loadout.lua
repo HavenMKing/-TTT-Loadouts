@@ -2,15 +2,15 @@ net.Receive( "loadout_invisible", function()
 	invisibleweapons = net.ReadTable() 
 end )
 
-net.Receive( "ttt_loadoutprimary", function()
+net.Receive( "ttt_loadoutprimaryClient", function()
 	primaryClass = net.ReadString()
 end )
 
-net.Receive( "ttt_loadoutsecondary", function()
+net.Receive( "ttt_loadoutsecondaryClient", function()
 	secondaryClass = net.ReadString()
 end )
 
-net.Receive( "ttt_loadoutequipment", function()
+net.Receive( "ttt_loadoutequipmentClient", function()
 	equipmentClass = net.ReadString()
 end )
 

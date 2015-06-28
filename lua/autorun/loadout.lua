@@ -1,8 +1,13 @@
 ---Weapon Loadout Master -------------------------------------
+if SERVER then
 util.AddNetworkString( "ttt_loadoutprimary" )
 util.AddNetworkString( "ttt_loadoutsecondary" )
 util.AddNetworkString( "ttt_loadoutequipment" )
+util.AddNetworkString( "ttt_loadoutprimaryClient" )
+util.AddNetworkString( "ttt_loadoutsecondaryClient" )
+util.AddNetworkString( "ttt_loadoutequipmentClient" )
 util.AddNetworkString( "loadout_invisible" )
+
 
 if file.Exists( "loadout/invisible.txt", "DATA" ) then
     invisibleWeapons = util.JSONToTable(file.Read("loadout/invisible.txt", "DATA"))
@@ -11,7 +16,7 @@ else
     file.Write( "loadout/invisible.txt", util.TableToJSON( invisibleWeapons, true ) )
 end
 
-hook.Add( "Tick", "sendInvisibles", function() 
+hook.Add( "Think", "sendInvisibles", function() 
 	net.Start( "loadout_invisible" )
 		net.WriteTable( invisibleWeapons )
 	net.Broadcast()
@@ -23,19 +28,19 @@ function sendLoadouts()
 		local primary = file.Read( "loadout/" .. identifier .. "/primary.txt", "DATA" )
 		local secondary = file.Read( "loadout/" .. identifier .. "/pistol.txt", "DATA" )
 		local equipment = file.Read( "loadout/" .. identifier .. "/equipment.txt", "DATA" )
-        net.Start( "ttt_loadoutprimary" )
+        net.Start( "ttt_loadoutprimaryClient" )
 			net.WriteString( primary )
 		net.Send( pl )
-		net.Start( "ttt_loadoutsecondary" )
+		net.Start( "ttt_loadoutsecondaryClient" )
 			net.WriteString( secondary )
 		net.Send( pl )
-		net.Start( "ttt_loadoutequipment" )
+		net.Start( "ttt_loadoutequipmentClient" )
 			net.WriteString( equipment )
 		net.Send( pl )
     end
 end
 
-hook.Add( "Tick", "sendPlayerloads", sendLoadouts )
+hook.Add( "Think", "sendPlayerloads", sendLoadouts )
 
 net.Receive( "ttt_loadoutprimary", function( length, player )
 	local identifier = player:SteamID64()
@@ -134,5 +139,6 @@ function fixreporting()
 	end
 end
 
-hook.Add( "Tick", "RDMManagerFix", fixreporting )
+hook.Add( "Think", "RDMManagerFix", fixreporting )
 
+end
