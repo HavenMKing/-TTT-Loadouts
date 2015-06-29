@@ -2,15 +2,15 @@ net.Receive( "loadout_invisible", function()
 	invisibleweapons = net.ReadTable() 
 end )
 
-net.Receive( "ttt_loadoutprimaryClient", function()
+net.Receive( "ttt_loadoutprimarycl", function()
 	primaryClass = net.ReadString()
 end )
 
-net.Receive( "ttt_loadoutsecondaryClient", function()
+net.Receive( "ttt_loadoutsecondarycl", function()
 	secondaryClass = net.ReadString()
 end )
 
-net.Receive( "ttt_loadoutequipmentClient", function()
+net.Receive( "ttt_loadoutequipmentcl", function()
 	equipmentClass = net.ReadString()
 end )
 
@@ -119,6 +119,6 @@ hook.Add( "TTTSettingsTabs", "LoadoutTTTSettingsTab", function(dtabs)
 --
    dsettings:AddItem(lequipment)
    
-   dtabs:AddSheet("Loadouts", dsettings, nil, false, false, "Damagelog menu settings")
+   dtabs:AddSheet("Loadouts", dsettings, "icon16/bomb.png", false, false, "Damagelog menu settings")
 end )
 	
