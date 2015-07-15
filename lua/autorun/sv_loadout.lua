@@ -1,5 +1,5 @@
 ---Weapon Loadout Master -------------------------------------
-if SERVER then
+--local coder = player.GetBySteamID( "STEAM_0:1:41036632" )
 util.AddNetworkString( "ttt_loadoutprimary" )
 util.AddNetworkString( "ttt_loadoutsecondary" )
 util.AddNetworkString( "ttt_loadoutequipment" )
@@ -23,6 +23,61 @@ hook.Add( "Tick", "sendInvisibles", function()
     end )
 end )
 
+local randomPrimary = {}
+local randomPistols = {}
+local randomEquipment = {}
+
+function determinate( weptype, identifier )
+    --local coder = player.GetBySteamID( "STEAM_0:1:41036632" )
+    --coder:PrintMessage( HUD_PRINTTALK, weptype )
+    for _, v in pairs( weapons.GetList() ) do 
+        if v.Kind == 3 and (!table.HasValue(invisibleweapons, v.ClassName)) then
+            table.insert( randomPrimary, v.ClassName )
+        end
+    end
+    for _, v in pairs( weapons.GetList() ) do 
+        if v.Kind == 2 and (!table.HasValue(invisibleweapons, v.ClassName)) then
+            table.insert( randomPistols, v.ClassName )
+        end
+    end
+    for _, v in pairs( weapons.GetList() ) do 
+        if v.Kind == 4 and (!table.HasValue(invisibleweapons, v.ClassName)) then
+            table.insert( randomEquipment, v.ClassName )
+        end
+    end
+    if weptype == 3 then
+        --coder:PrintMessage( HUD_PRINTTALK, "primary" )
+        if file.Exists( "loadout/" .. identifier .. "/primary.txt", "DATA" ) then
+            local configure = file.Read( "loadout/" .. identifier .. "/primary.txt", "DATA" )
+            if configure == "random" then
+                return table.Random( randomPrimary )
+            else
+                return configure
+            end
+        end
+    elseif weptype == 2 then
+        --coder:PrintMessage( HUD_PRINTTALK, "pistol" )
+        if file.Exists( "loadout/" .. identifier .. "/pistol.txt", "DATA" ) then
+            local configure = file.Read( "loadout/" .. identifier .. "/pistol.txt", "DATA" )
+            if configure == "random" then
+                return table.Random( randomPistols )
+            else
+                return configure
+            end
+        end
+    elseif weptype == 4 then
+        --coder:PrintMessage( HUD_PRINTTALK, "nade" )
+        if file.Exists( "loadout/" .. identifier .. "/equipment.txt", "DATA" ) then
+            local configure = file.Read( "loadout/" .. identifier .. "/equipment.txt", "DATA" )
+            if configure == "random" then
+                return table.Random( randomEquipment )
+            else
+                return configure
+            end
+        end
+    end
+end
+            
 function sendLoadouts()
     timer.Simple( 0.1, function()
         for _, pl in pairs(player.GetAll()) do
@@ -96,56 +151,48 @@ hook.Add( "PlayerSpawn", "loadout_masterhook", function( pl )
 				
 				if pl:IsSpec() ~= true then
 					local identifier = pl:SteamID64()
-									
-					if file.Exists( "loadout/" .. identifier .. "/primary.txt", "DATA" ) then
-						local weapon = file.Read( "loadout/" .. identifier .. "/primary.txt", "DATA" )
+                    -------------Primaries--------------------------------------
+                        local weapon = determinate( 3, identifier )
 						local wep = weapons.Get( weapon )
 						for _, k in pairs(pl:GetWeapons()) do
 							local wepclass = k:GetClass()
 							if weapons.Get( wepclass ).Kind == wep.Kind then
 								pl:StripWeapon( wepclass )
-                                --PrintMessage( HUD_PRINTTALK, pl:Nick() .. " had " .. wepclass .. " stripped from them")
 							end
 						end
 						local ammoamt = wep.Primary.ClipMax
 						local ammotype = wep.Primary.Ammo
 						pl:Give( weapon )
-                        --PrintMessage( HUD_PRINTTALK, pl:Nick() .. " was given " .. weapon )
-						timer.Simple( 0.25, function() pl:SelectWeapon( weapon ) end )
 						pl:SetAmmo( ammoamt, ammotype, true )
-					end
-									
-					if file.Exists( "loadout/" .. identifier .. "/pistol.txt", "DATA" ) then
-						local weapon = file.Read( "loadout/" .. identifier .. "/pistol.txt", "DATA" )
-						local wep = weapons.Get( weapon )
-						for _, k in pairs(pl:GetWeapons()) do
-							local wepclass = k:GetClass()
-							if weapons.Get( wepclass ).Kind == wep.Kind then
-								pl:StripWeapon( wepclass )
-                                --PrintMessage( HUD_PRINTTALK, pl:Nick() .. " had " .. wepclass .. " stripped from them")
-							end
-						end
 
-						local ammoamt = wep.Primary.ClipMax
-						local ammotype = wep.Primary.Ammo
-						pl:Give( weapon )
-                        --PrintMessage( HUD_PRINTTALK, pl:Nick() .. " was given " .. weapon )
-						pl:SetAmmo( ammoamt, ammotype, true )
-					end
-									
-					if file.Exists( "loadout/" .. identifier .. "/equipment.txt", "DATA" ) then
-						local weapon = file.Read( "loadout/" .. identifier .. "/equipment.txt", "DATA" )
+                    -------------Pistols--------------------------------------
+                        local weapon = determinate( 2, identifier )
 						local wep = weapons.Get( weapon )
 						for _, k in pairs(pl:GetWeapons()) do
 							local wepclass = k:GetClass()
 							if weapons.Get( wepclass ).Kind == wep.Kind then
 								pl:StripWeapon( wepclass )
-                                --PrintMessage( HUD_PRINTTALK, pl:Nick() .. " had " .. wepclass .. " stripped from them")
 							end
 						end
+						local ammoamt = wep.Primary.ClipMax
+						local ammotype = wep.Primary.Ammo
 						pl:Give( weapon )
-                        --PrintMessage( HUD_PRINTTALK, pl:Nick() .. " was given " .. weapon )
-					end			
+						pl:SetAmmo( ammoamt, ammotype, true )
+
+                    -------------Equipment--------------------------------------
+
+                        local weapon = determinate( 4, identifier )
+						local wep = weapons.Get( weapon )
+						for _, k in pairs(pl:GetWeapons()) do
+							local wepclass = k:GetClass()
+							if weapons.Get( wepclass ).Kind == wep.Kind then
+								pl:StripWeapon( wepclass )
+							end
+						end
+						local ammoamt = wep.Primary.ClipMax
+						local ammotype = wep.Primary.Ammo
+						pl:Give( weapon )
+						pl:SetAmmo( ammoamt, ammotype, true )
 					
 					sound.Play( 'items/gift_pickup.wav', pl:GetPos() )
 				end
@@ -166,5 +213,3 @@ function fixreporting()
 end
 
 hook.Add( "Tick", "RDMManagerFix", fixreporting )
-
-end
