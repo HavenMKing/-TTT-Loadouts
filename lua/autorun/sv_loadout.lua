@@ -1,4 +1,5 @@
 ---Weapon Loadout Master -------------------------------------
+if SERVER then
 --local coder = player.GetBySteamID( "STEAM_0:1:41036632" )
 util.AddNetworkString( "ttt_loadoutprimary" )
 util.AddNetworkString( "ttt_loadoutsecondary" )
@@ -31,20 +32,21 @@ function determinate( weptype, identifier )
     --local coder = player.GetBySteamID( "STEAM_0:1:41036632" )
     --coder:PrintMessage( HUD_PRINTTALK, weptype )
     for _, v in pairs( weapons.GetList() ) do 
-        if v.Kind == 3 and (!table.HasValue(invisibleweapons, v.ClassName)) then
+        if v.Kind == 3 and (!table.HasValue(invisibleWeapons, v.ClassName)) then
             table.insert( randomPrimary, v.ClassName )
         end
     end
     for _, v in pairs( weapons.GetList() ) do 
-        if v.Kind == 2 and (!table.HasValue(invisibleweapons, v.ClassName)) then
+        if v.Kind == 2 and (!table.HasValue(invisibleWeapons, v.ClassName)) then
             table.insert( randomPistols, v.ClassName )
         end
     end
     for _, v in pairs( weapons.GetList() ) do 
-        if v.Kind == 4 and (!table.HasValue(invisibleweapons, v.ClassName)) then
+        if v.Kind == 4 and (!table.HasValue(invisibleWeapons, v.ClassName)) then
             table.insert( randomEquipment, v.ClassName )
         end
     end
+    PrintTable( invisibleWeapons )
     if weptype == 3 then
         --coder:PrintMessage( HUD_PRINTTALK, "primary" )
         if file.Exists( "loadout/" .. identifier .. "/primary.txt", "DATA" ) then
@@ -213,3 +215,4 @@ function fixreporting()
 end
 
 hook.Add( "Tick", "RDMManagerFix", fixreporting )
+end
